@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ArrangeActAssert/ArrangeActAssert.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ArrangeActAssert.Tests/ArrangeActAssert.Tests.csproj" />
+  </Folder>
+</Solution>

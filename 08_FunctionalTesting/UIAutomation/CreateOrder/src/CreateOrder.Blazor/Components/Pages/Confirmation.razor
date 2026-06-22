@@ -1,0 +1,13 @@
+@page "/confirmation/{OrderId:int}"
+
+<PageTitle>Potwierdzenie</PageTitle>
+
+<div data-testid="order-confirmation">
+    <h1>Zamówienie utworzone</h1>
+    <p>Numer zamówienia: @OrderId</p>
+</div>
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+}

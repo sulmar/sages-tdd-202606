@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CreateOrder/CreateOrder.csproj" />
+    <Project Path="src/CreateOrder.Blazor/CreateOrder.Blazor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CreateOrder.UiTests/CreateOrder.UiTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LegacyPrinter/LegacyPrinter.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LegacyPrinter.Tests/LegacyPrinter.Tests.csproj" />
+  </Folder>
+</Solution>

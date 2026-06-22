@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CouponExpiration/CouponExpiration.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CouponExpiration.Tests/CouponExpiration.Tests.csproj" />
+  </Folder>
+</Solution>

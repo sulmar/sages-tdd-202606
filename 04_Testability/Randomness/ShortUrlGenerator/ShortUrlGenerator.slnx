@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ShortUrlGenerator/ShortUrlGenerator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShortUrlGenerator.Tests/ShortUrlGenerator.Tests.csproj" />
+  </Folder>
+</Solution>
