@@ -37,7 +37,6 @@ public class AccessControlTests
         Assert.False(result);
     }
 
-
     [Fact]
     public void CanEnter_EmptyBadge_ReturnsFalse()
     {        
