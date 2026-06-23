@@ -7,13 +7,5 @@ public class Badge
 
 public class AccessControl
 {
-    public bool CanEnter(Badge badge)
-    {
-        if (badge.IsActive)
-        {
-            return true;
-        }
-
-        return false;
-    }
+    public bool CanEnter(Badge badge) => badge != null && badge.IsActive;
 }

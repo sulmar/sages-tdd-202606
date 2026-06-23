@@ -7,12 +7,14 @@ public class AccessControlTests
 
     // {MethodUnderTest}_[Scenario]_[ExpectedBehavior]
 
+    private readonly AccessControl accessControl = new();
+    private readonly Badge badge = new();
+
     [Fact]
     public void CanEnter_ActiveBadge_ReturnsTrue()
     {
-        // Arrange
-        var accessControl = new AccessControl();
-        var badge = new Badge { IsActive = true };
+        // Arrange        
+        badge.IsActive = true;
 
         // Act
         var result = accessControl.CanEnter(badge);
@@ -26,12 +28,22 @@ public class AccessControlTests
     public void CanEnter_InactiveBadge_ReturnsFalse()
     {
         // Arrange
-        var accessControl = new AccessControl();
-        var badge = new Badge { IsActive = false };
+        badge.IsActive = false;
 
         // Act
         var result = accessControl.CanEnter(badge);
 
+        // Assert
+        Assert.False(result);
+    }
+
+
+    [Fact]
+    public void CanEnter_EmptyBadge_ReturnsFalse()
+    {        
+        // Act
+        var result = accessControl.CanEnter(null);
+        
         // Assert
         Assert.False(result);
     }
