@@ -8,7 +8,7 @@ public class ShoppingCart
 
     public ShoppingCart()
     {
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;        
     }
 
     public void AddProduct(string name, decimal price)
