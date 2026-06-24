@@ -1,6 +1,45 @@
 namespace EmailProcessing;
 
-public class EmailProcessor
+
+public class EmailContext
+{
+    public Email Email { get; set; }
+    public string? Nip { get; set; }
+}
+
+
+public abstract class EmailHandler 
+{
+    private EmailHandler? _next;
+
+    public EmailHandler SetNext(EmailHandler next)
+    {
+        _next = next;
+
+        return next;
+    }
+
+    public void Handle(EmailContext context)
+    {
+        if (!Process(context))
+        {
+            return;
+        }
+
+        if (_next != null)
+            _next.Handle(context);       
+    }
+
+    protected abstract bool Process(EmailContext context);
+}
+
+
+public interface IWhitelistRepository
+{
+    bool Exists(string from);
+}
+
+public class InMemoryWhitelistRepository : IWhitelistRepository
 {
     private static readonly HashSet<string> Whitelist =
     [
@@ -8,44 +47,40 @@ public class EmailProcessor
         "partner@example.com"
     ];
 
-    private readonly Dictionary<string, Customer> _customers = new()
+    public bool Exists(string from)
     {
-        ["1234567890"] = new Customer("1234567890", "Acme Corp")
-    };
+        return Whitelist.Contains(from);
+    }
+}
 
-    private readonly List<Email> _createdQuotes = [];
 
-    public IReadOnlyList<Email> CreatedQuotes => _createdQuotes;
+public class WhitelistHandler : EmailHandler
+{
+    private InMemoryWhitelistRepository repository;
 
-    public void Process(Email email)
+    public WhitelistHandler(InMemoryWhitelistRepository repository)
     {
-        if (!IsWhitelisted(email.From))
-        {
-            return;
-        }
-
-        string? nip = ExtractNip(email.Body);
-
-        if (nip is null)
-        {
-            return;
-        }
-
-        Customer? customer = LookupCustomer(nip);
-
-        if (customer is null)
-        {
-            return;
-        }
-
-        CreateQuote(email);
+        this.repository = repository;
     }
 
-    private bool IsWhitelisted(string from) => Whitelist.Contains(from);
+    protected override bool Process(EmailContext context)
+    {
+        return IsWhitelisted(context.Email.From);
+    }
 
-    private Customer? LookupCustomer(string nip) => _customers.GetValueOrDefault(nip);
+    private bool IsWhitelisted(string from) => repository.Exists(from);
+}
 
-    private void CreateQuote(Email email) => _createdQuotes.Add(email);
+public class ExtractNipHandler : EmailHandler
+{
+    protected override bool Process(EmailContext context)
+    {
+        string? nip = ExtractNip(context.Email.Body);
+
+        context.Nip = nip;
+
+        return nip is not null;        
+    }
 
     private static string? ExtractNip(string body)
     {
@@ -59,4 +94,76 @@ public class EmailProcessor
 
         return null;
     }
+}
+
+public class LookupCustomerHandler : EmailHandler
+{
+    private readonly Dictionary<string, Customer> _customers = new()
+    {
+        ["1234567890"] = new Customer("1234567890", "Acme Corp")
+    };
+
+    protected override bool Process(EmailContext context)
+    {
+        Customer? customer = LookupCustomer(context.Nip!);
+
+        return customer is not null;
+    }
+
+    private Customer? LookupCustomer(string nip) => _customers.GetValueOrDefault(nip);
+}
+
+
+public class CreateQuoteHandler : EmailHandler
+{
+    private readonly List<Email> _createdQuotes = [];
+
+    public IReadOnlyList<Email> CreatedQuotes => _createdQuotes;
+
+    protected override bool Process(EmailContext context)
+    {
+        CreateQuote(context.Email);
+
+        return true;
+    }
+
+    private void CreateQuote(Email email) => _createdQuotes.Add(email);
+}
+
+
+public class EmailPipelineFactory
+{
+    private EmailHandler _pipeline;
+
+    public EmailHandler Create()
+    {
+        var whitelist = new WhitelistHandler(new InMemoryWhitelistRepository());
+        var extractNip = new ExtractNipHandler();
+        var lookupCustomer = new LookupCustomerHandler();
+        var createQuote = new CreateQuoteHandler();
+
+        whitelist
+            .SetNext(extractNip)
+            .SetNext(lookupCustomer)
+            .SetNext(createQuote);
+
+        _pipeline = whitelist;
+
+        return _pipeline;
+    }
+}
+
+public class EmailProcessor
+{
+    private readonly EmailHandler _pipeline;
+
+    public EmailProcessor(EmailPipelineFactory factory)
+    {       
+        _pipeline = factory.Create();
+    }
+
+    public void Process(Email email)
+    {
+        _pipeline.Handle(new EmailContext { Email = email });             
+    }  
 }

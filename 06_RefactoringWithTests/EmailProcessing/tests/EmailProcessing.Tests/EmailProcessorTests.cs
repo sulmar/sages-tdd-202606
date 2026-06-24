@@ -2,7 +2,7 @@ namespace EmailProcessing.Tests;
 
 public class EmailProcessorTests
 {
-    private readonly EmailProcessor _processor = new();
+    private readonly EmailProcessor _processor = new(new EmailPipelineFactory());
 
     [Fact]
     public void Process_SenderNotOnWhitelist_DoesNotCreateQuote()
@@ -14,7 +14,9 @@ public class EmailProcessorTests
 
         _processor.Process(email);
 
-        Assert.Empty(_processor.CreatedQuotes);
+        throw new NotImplementedException();
+
+        // Assert.Empty(_processor.CreatedQuotes);
     }
 
     [Fact]
@@ -27,7 +29,9 @@ public class EmailProcessorTests
 
         _processor.Process(email);
 
-        Assert.Empty(_processor.CreatedQuotes);
+        // Assert.Empty(_processor.CreatedQuotes);
+
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -40,7 +44,9 @@ public class EmailProcessorTests
 
         _processor.Process(email);
 
-        Assert.Empty(_processor.CreatedQuotes);
+        //   Assert.Empty(_processor.CreatedQuotes);
+
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -53,7 +59,9 @@ public class EmailProcessorTests
 
         _processor.Process(email);
 
-        Assert.Single(_processor.CreatedQuotes);
-        Assert.Equal(email, _processor.CreatedQuotes[0]);
+        // Assert.Single(_processor.CreatedQuotes);
+        // Assert.Equal(email, _processor.CreatedQuotes[0]);
+        throw new NotImplementedException();
+
     }
 }
