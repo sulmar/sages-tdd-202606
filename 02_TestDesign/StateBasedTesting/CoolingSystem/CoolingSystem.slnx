@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="SmartHome/SmartHome.csproj" Id="cead1ec7-da10-4ae2-ba9f-35101baa8f67" />
     <Project Path="src/CoolingSystem/CoolingSystem.csproj" />
   </Folder>
   <Folder Name="/tests/">

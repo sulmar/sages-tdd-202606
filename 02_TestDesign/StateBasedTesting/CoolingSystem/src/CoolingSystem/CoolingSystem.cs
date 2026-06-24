@@ -2,7 +2,7 @@ namespace CoolingSystem;
 
 public class CoolingSystem
 {
-    public CoolingState State { get; private set; }
+    public CoolingState State { get; internal set; }
 
     public void Update(double temperature)
     {
