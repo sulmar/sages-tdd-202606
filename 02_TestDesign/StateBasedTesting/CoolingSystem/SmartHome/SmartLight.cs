@@ -1,23 +1,59 @@
-﻿namespace SmartHome;
+﻿using Stateless;
+
+namespace SmartHome;
+
+// dotnet add package Stateless
 
 public class SmartLight
 {
-    public void MotionDetected()
+    public LightState State => machine.State;
+
+    private readonly StateMachine<LightState, LightTrigger> machine;
+
+    private void SendEmail()
     {
-        // Logic to turn on the light when motion is detected
+        Console.WriteLine( "Send email");
     }
 
-    public void Timeout()
+    public string Graph => Stateless.Graph.MermaidGraph.Format(machine.GetInfo());
+
+    public SmartLight()
     {
-        // Logic to turn off the light after a certain period of inactivity
+        // FSM (Finite State Machine)
+        machine = new StateMachine<LightState, LightTrigger>(LightState.Off);
+
+        machine.Configure(LightState.Off)
+            .Permit(LightTrigger.MotionDetected, LightState.On);
+
+        machine.Configure(LightState.On)
+            .OnEntry( SendEmail)
+            .Permit(LightTrigger.Timeout, LightState.Dimmed)            ;
+
+        machine.Configure(LightState.Dimmed)
+            .Permit(LightTrigger.Timeout, LightState.Off);
+
+
+        System.Diagnostics.Debug.WriteLine(Graph);
+
     }
+
+    public void MotionDetected() => machine.Fire(LightTrigger.MotionDetected);
+
+    public void Timeout() => machine.Fire(LightTrigger.Timeout);
 }
 
-// Off -> MotionDetected() -> On -> Timeout() -> Off
+// Off -> MotionDetected() -> On -> Timeout() -> Dimmed -> Timeout() -> Off
 
 
 public enum LightState
 {
     Off,
-    On
+    On,
+    Dimmed
+}
+
+public enum LightTrigger
+{
+    MotionDetected,
+    Timeout
 }
