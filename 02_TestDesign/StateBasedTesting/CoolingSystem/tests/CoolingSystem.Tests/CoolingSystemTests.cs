@@ -2,6 +2,22 @@ namespace CoolingSystem.Tests;
 
 public class CoolingSystemTests
 {
+    [Theory]
+    [InlineData(0, 30, CoolingState.On)]
+    [InlineData(0, 29, CoolingState.Off)]
+    [InlineData(50, 25, CoolingState.Off)]
+    [InlineData(50, 26, CoolingState.On)]
+    public void Update_ForGivenTemperature_ChangeStateToExpected(double initialTemperature, double temperature, CoolingState expectedCoolingState)
+    {
+        //Arrange 
+        var system = new CoolingSystem();
+        system.Update(initialTemperature);
+        //Act 
+        system.Update(temperature);
+        //Assert
+        Assert.Equal(expectedCoolingState, system.State.Value);
+    }
+
     public readonly CoolingSystem coolingSystem = new();
     //Przykłady
     //Stan początkowy Temperatura Stan końcowy
@@ -23,29 +39,24 @@ public class CoolingSystemTests
     public void Test1(CoolingState start, double temperature, CoolingState end)
     {
         // Arrange
-        coolingSystem.State = start;
+        coolingSystem.State = start.Convert();
         // Act
         coolingSystem.Update(temperature);
         // Assert
-        Assert.True(coolingSystem.State == end);
+        Assert.True(coolingSystem.State.Value == end);
     }
 
-    [Theory]
-    [InlineData(0, 30, CoolingState.On)]
-    [InlineData(0, 29, CoolingState.Off)]
-    [InlineData(50, 25, CoolingState.Off)]
-    [InlineData(50, 26, CoolingState.On)]
-    public void Update_ForGivenTemperature_ChangeStateToExpected(double initialTemperature, double temperature, CoolingState expectedCoolingState)
+    
+
+
+
+}
+
+public static class Helper
+{
+    public static ICoolingState Convert(this CoolingState value) => value switch
     {
-        //Arrange 
-        var system = new CoolingSystem();
-        system.Update(initialTemperature);
-        //Act 
-        system.Update(temperature);
-        //Assert
-        Assert.Equal(expectedCoolingState, system.State);
-    }
-
-
-
+        CoolingState.Off => new OffCoolingState(),
+        CoolingState.On => new OnCoolingState()
+    };
 }

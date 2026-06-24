@@ -2,21 +2,15 @@ namespace CoolingSystem;
 
 public class CoolingSystem
 {
-    public CoolingState State { get; internal set; }
+    public ICoolingState State { get; internal set; }
+
+    public CoolingSystem()
+    {
+        State = new OffCoolingState(); // Initial state
+    }
 
     public void Update(double temperature)
     {
-        if (State == CoolingState.Off &&
-            temperature >= 30)
-        {
-            State = CoolingState.On;
-            return;
-        }
-
-        if (State == CoolingState.On &&
-            temperature <= 25)
-        {
-            State = CoolingState.Off;
-        }
+        State.Handle(this, temperature);
     }
 }
