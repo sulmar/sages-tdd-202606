@@ -30,6 +30,22 @@ public class CoolingSystemTests
         Assert.True(coolingSystem.State == end);
     }
 
-    
+    [Theory]
+    [InlineData(0, 30, CoolingState.On)]
+    [InlineData(0, 29, CoolingState.Off)]
+    [InlineData(50, 25, CoolingState.Off)]
+    [InlineData(50, 26, CoolingState.On)]
+    public void Update_ForGivenTemperature_ChangeStateToExpected(double initialTemperature, double temperature, CoolingState expectedCoolingState)
+    {
+        //Arrange 
+        var system = new CoolingSystem();
+        system.Update(initialTemperature);
+        //Act 
+        system.Update(temperature);
+        //Assert
+        Assert.Equal(expectedCoolingState, system.State);
+    }
+
+
 
 }
