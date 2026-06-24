@@ -46,13 +46,9 @@ public class CoolingSystemTests
         Assert.True(coolingSystem.State.Value == end);
     }
 
-    
-
-
-
 }
 
-public static class Helper
+internal static class Helper
 {
     public static ICoolingState Convert(this CoolingState value) => value switch
     {

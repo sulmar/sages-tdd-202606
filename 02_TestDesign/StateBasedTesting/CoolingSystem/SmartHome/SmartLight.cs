@@ -25,9 +25,9 @@ public class SmartLight
         machine.Configure(LightState.Off)
             .Permit(LightTrigger.MotionDetected, LightState.On);
 
-        machine.Configure(LightState.On)
-            .OnEntry( SendEmail)
-            .Permit(LightTrigger.Timeout, LightState.Dimmed)            ;
+        //machine.Configure(LightState.On)
+        //    .OnEntry( SendEmail)
+        //    .Permit(LightTrigger.Timeout, LightState.Dimmed)            ;
 
         machine.Configure(LightState.Dimmed)
             .Permit(LightTrigger.Timeout, LightState.Off);
