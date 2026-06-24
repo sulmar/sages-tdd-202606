@@ -4,12 +4,11 @@
 
 public class SmartLightTests
 {
+    private readonly SmartLight light = new SmartLight(new SmartLightStateMachine());
+
     [Fact]
     public void MotionDetected_WhenLightIsOff_ShouldTurnOn()
-    {
-        // Arrange
-        var light = new SmartLight();
-
+    {        
         // Act
         light.MotionDetected();
 
@@ -22,8 +21,7 @@ public class SmartLightTests
     [Fact]
     public void Timeout_WhenLightIsOn_ShouldDimmed()
     {  
-        // Arrange
-        var light = new SmartLight();
+        // Arrange     
         light.MotionDetected();
 
         // Act
@@ -39,8 +37,7 @@ public class SmartLightTests
     [Fact]
     public void Timeout_WhenLightIsDimmed_ShouldTurnOff()
     {
-        // Arrange
-        var light = new SmartLight();
+        // Arrange        
         light.MotionDetected();
         light.Timeout();
 

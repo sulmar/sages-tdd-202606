@@ -1,8 +1,35 @@
 ﻿using Stateless;
+using System.Reflection.PortableExecutable;
 
 namespace SmartHome;
 
 // dotnet add package Stateless
+public class SmartLightStateMachine : StateMachine<LightState, LightTrigger>
+{
+    private void SendEmail()
+    {
+        Console.WriteLine("Send email");
+    }
+
+    public SmartLightStateMachine(LightState initialState = LightState.Off) : base(initialState)
+    {
+        this.Configure(LightState.Off)
+           .Permit(LightTrigger.MotionDetected, LightState.On);
+
+        this.Configure(LightState.On)
+            .OnEntry(()=> SendEmail()) // -> hint: uzyj wzorca mediator aby pozbyc sie zaleznosci
+            .Permit(LightTrigger.Timeout, LightState.Dimmed)
+            // .PermitIf(LightTrigger.Timeout, LightState.Dimmed, () => true)
+            .Ignore(LightTrigger.MotionDetected);
+
+        this.Configure(LightState.Dimmed)
+            .Permit(LightTrigger.Timeout, LightState.Off);
+    }
+
+    public string Graph => Stateless.Graph.MermaidGraph.Format(this.GetInfo());
+
+}
+
 
 public class SmartLight
 {
@@ -10,30 +37,13 @@ public class SmartLight
 
     private readonly StateMachine<LightState, LightTrigger> machine;
 
-    private void SendEmail()
-    {
-        Console.WriteLine( "Send email");
-    }
+  
 
-    public string Graph => Stateless.Graph.MermaidGraph.Format(machine.GetInfo());
-
-    public SmartLight()
+  
+    public SmartLight(StateMachine<LightState, LightTrigger> machine)
     {
         // FSM (Finite State Machine)
-        machine = new StateMachine<LightState, LightTrigger>(LightState.Off);
-
-        machine.Configure(LightState.Off)
-            .Permit(LightTrigger.MotionDetected, LightState.On);
-
-        //machine.Configure(LightState.On)
-        //    .OnEntry( SendEmail)
-        //    .Permit(LightTrigger.Timeout, LightState.Dimmed)            ;
-
-        machine.Configure(LightState.Dimmed)
-            .Permit(LightTrigger.Timeout, LightState.Off);
-
-
-        System.Diagnostics.Debug.WriteLine(Graph);
+        this.machine = machine;
 
     }
 
