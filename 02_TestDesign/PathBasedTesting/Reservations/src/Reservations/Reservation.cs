@@ -6,22 +6,9 @@ public class Reservation
 
     public bool CanCancel(User user)
     {
-        if (user == null)
-        {
-            throw new ArgumentNullException(nameof(user));
-        }
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (user.IsAdmin)
-        {
-            return true;
-        }
-
-        if (user == Owner)
-        {
-            return true;
-        }
-
-        return false;
+        return user.IsAdmin || user == Owner;
     }
 }
 
