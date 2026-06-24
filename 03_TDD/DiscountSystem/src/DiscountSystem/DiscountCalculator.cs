@@ -1,16 +1,78 @@
+using System.Net.Http.Headers;
+
 namespace DiscountSystem;
 
-public class DiscountCalculator
+public record Coupon(string Code, decimal Discount, bool SingleUse = false);
+
+public interface ICouponCodeRepository
+{
+    void Add(Coupon coupon);
+    Coupon? Get(string couponCode);
+  
+}
+
+public class SingleUseCouponCodeRepository : ICouponCodeRepository
 {
     // Predefiniowana puli kodów rabatowych
-    private readonly Dictionary<string, decimal> oneTimeCouponCodes = [];
+    private readonly HashSet<string> usedCodes = [];
 
-    public DiscountCalculator()
+    private readonly ICouponCodeRepository _inner;
+
+    public SingleUseCouponCodeRepository(ICouponCodeRepository inner)
     {
-        oneTimeCouponCodes.Add("ONETIME50", 0.5m);
-        oneTimeCouponCodes.Add("HAPPY50", 0.5m);
+        this._inner = inner;
     }
 
+    public void Add(Coupon coupon)
+    {
+        _inner.Add(coupon);
+    }
+
+    public Coupon? Get(string couponCode)
+    {
+        var coupon = _inner.Get(couponCode);
+
+        if (coupon == null)
+            return null;
+
+        if (coupon.SingleUse)
+        {
+            if (usedCodes.Contains(couponCode))
+                return null;
+
+            usedCodes.Add(couponCode);
+        }
+            
+        return coupon;
+    }
+
+  
+}
+
+public class UseCouponCodeRepository : ICouponCodeRepository
+{
+    // Predefiniowana puli kodów rabatowych
+    private readonly Dictionary<string, Coupon> couponCodes = [];
+
+    public void Add(Coupon coupon)
+    {
+        couponCodes.Add(coupon.Code, coupon);
+    }
+
+    public Coupon? Get(string couponCode)
+    {
+        if (couponCodes.TryGetValue(couponCode, out var discount))
+        {
+            return discount;
+        }
+
+        return null;
+    }
+    
+}
+
+public class DiscountCalculator(ICouponCodeRepository repository)
+{     
     public decimal CalculateDiscount(decimal price, string discountCode)
     {
         if (price < 0)
@@ -20,24 +82,9 @@ public class DiscountCalculator
         {
             return 0;
         }
+        
+        var coupon = repository.Get(discountCode) ?? throw new ArgumentException("Invalid discount code.");
 
-        if (discountCode == "SAVE10NOW")
-        {
-            return price * 0.10m;
-        }
-
-        if (discountCode == "DISCOUNT20OFF")
-        {
-            return price * 0.20m;
-        }
-
-        if (oneTimeCouponCodes.TryGetValue(discountCode, out var discount))
-        {
-            oneTimeCouponCodes.Remove(discountCode);
-            return price * discount;
-        }
-
-        throw new ArgumentException("Invalid discount code.");
-
+        return price * coupon.Discount;
     }
 }

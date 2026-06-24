@@ -2,7 +2,16 @@ namespace DiscountSystem.Tests;
 
 public class DiscountCalculatorTests
 {
-    readonly DiscountCalculator  discountCalculator = new DiscountCalculator();
+    readonly DiscountCalculator discountCalculator;
+    readonly ICouponCodeRepository couponCodeRepository;   
+
+    public DiscountCalculatorTests()
+    {
+        couponCodeRepository = new SingleUseCouponCodeRepository(
+                                    new UseCouponCodeRepository());
+
+        discountCalculator = new DiscountCalculator(couponCodeRepository);
+    }
 
 
     [Theory]
@@ -22,10 +31,8 @@ public class DiscountCalculatorTests
     [Fact]
     public void CalculateDiscount_CouponCodeSAVE10NOW_ReturnsDiscount()
     {
-        // Arrange
-        var discountCalculator = new DiscountCalculator();
-
         // Act
+        couponCodeRepository.Add(new ("SAVE10NOW", 0.1m, false));
         var result = discountCalculator.CalculateDiscount(100, "SAVE10NOW");
 
         // Assert
@@ -37,10 +44,8 @@ public class DiscountCalculatorTests
     [Fact]
     public void CalculateDiscount_CouponCodeDISCOUNT20OFF_ReturnsDiscount()
     {
-        // Arrange
-        var discountCalculator = new DiscountCalculator();
-
         // Act
+        couponCodeRepository.Add(new ("DISCOUNT20OFF", 0.2m));
         var result = discountCalculator.CalculateDiscount(100, "DISCOUNT20OFF");
 
         // Assert
@@ -50,11 +55,12 @@ public class DiscountCalculatorTests
     #endregion
 
     [Theory]    
-    [InlineData("SAVE10NOW", 10)]
-    [InlineData("DISCOUNT20OFF", 20)]
-    public void CalculateDiscount_ValidCouponCode_ReturnsDiscount(string couponCode, decimal expectedDiscount)
-    {        
+    [InlineData("SAVE10NOW", 0.1, 10)]
+    [InlineData("DISCOUNT20OFF", 0.2, 20)]
+    public void CalculateDiscount_ValidCouponCode_ReturnsDiscount(string couponCode, decimal discount, decimal expectedDiscount)
+    {
         // Act
+        couponCodeRepository.Add(new (couponCode, discount));
         var result = discountCalculator.CalculateDiscount(100, couponCode);
         // Assert
         Assert.Equal(expectedDiscount, result);
@@ -80,9 +86,11 @@ public class DiscountCalculatorTests
     // Rabat jednorazowy 50% - Kupon z kodem, który jest częścią predefiniowanej puli kodów rabatowych, udziela jednorazowego rabatu 50%.
     [Fact]
     public void CalculateDiscount_SecondUsageOneTimeCouponCode_ThrowsArgumentExceptionWithMessage()
-    {   
-       // Arrange   
-       discountCalculator.CalculateDiscount(100, "ONETIME50"); // First usage
+    {
+        // Arrange   
+        couponCodeRepository.Add(new ("ONETIME50", 0.5m, true));
+
+        discountCalculator.CalculateDiscount(100, "ONETIME50"); // First usage
 
        // Act & Assert
        var exception = Assert.Throws<ArgumentException>(() => discountCalculator.CalculateDiscount(100, "ONETIME50")); // Second usage
