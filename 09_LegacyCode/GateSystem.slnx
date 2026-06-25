@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GateConsoleApp/GateConsoleApp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GateConsoleApp.Tests/GateConsoleApp.Tests.csproj" />
+  </Folder>
+</Solution>
