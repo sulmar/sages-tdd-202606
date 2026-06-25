@@ -2,7 +2,7 @@ namespace CustomerRegistration;
 
 public class CustomersController
 {
-    public ActionResult Post(CustomerValidator validator, Customer customer)
+    public ActionResult Post(ICustomerValidator validator, Customer customer)
     {
         bool isValid = validator.Validate(customer);
 

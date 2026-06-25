@@ -2,7 +2,7 @@ namespace CustomerRegistration.Tests;
 
 public class CustomerValidatorTests
 {
-    private readonly CustomerValidator _validator = new();
+    private readonly ICustomerValidator _validator = CustomerValidation.Create();
 
     [Fact]
     public void Validate_CustomerWithoutEmail_ReturnsFalse()

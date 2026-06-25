@@ -3,7 +3,7 @@ namespace CustomerRegistration.Tests;
 public class CustomersControllerTests
 {
     private readonly CustomersController _controller = new();
-    private readonly CustomerValidator _validator = new();
+    private readonly ICustomerValidator _validator = CustomerValidation.Create();
 
     [Fact]
     public void Post_InvalidCustomer_ReturnsBadRequest()
