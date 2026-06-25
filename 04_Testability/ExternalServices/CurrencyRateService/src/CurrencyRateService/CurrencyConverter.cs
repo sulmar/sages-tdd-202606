@@ -12,7 +12,7 @@ public class CurrencyConverter
     }
 
     public async Task<decimal> GetRateAsync(string fromCurrency, string toCurrency)
-    {
+    {        
         var response = await _httpClient.GetStringAsync(
             $"https://api.exchangerate.example/rates?from={fromCurrency}&to={toCurrency}");
 
