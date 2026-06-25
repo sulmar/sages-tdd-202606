@@ -1,12 +1,16 @@
 namespace CreateOrder;
 
-public class OrderController
+
+public interface IMessageClient
+{
+    void Send(string message);
+}
+
+public class OrderController(IMessageClient client)
 {
     public ActionResult Post(Order order)
-    {
-        var gmailClient = new GmailApiClient();
-
-        gmailClient.Send("Order created");
+    {        
+        client.Send("Order created");
 
         return new CreatedResult<Order>(order);
     }
