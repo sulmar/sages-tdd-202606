@@ -1,6 +1,11 @@
 namespace LegacyPrinter;
 
-public class NewPrinter
+public interface IPrinter
+{
+    void PrintDocument(string document, int copies);
+}
+
+public class NewPrinter : IPrinter
 {
     public void PrintDocument(string document, int copies)
     {

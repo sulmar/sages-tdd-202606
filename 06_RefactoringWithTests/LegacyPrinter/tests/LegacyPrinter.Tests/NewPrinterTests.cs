@@ -1,65 +1,63 @@
 namespace LegacyPrinter.Tests;
 
-public class NewPrinterTests
+// Fabryka (Factory)
+public class PrinterFactory
 {
+    public static IPrinter CreatePrinter(bool useLegacy = false) => useLegacy ? CreateLegacyPrinter() : CreateNewPrinter();
+
+    // Metody fabrykujace (Method Fabric)
+    public static IPrinter CreateLegacyPrinter() => new LegacyPrinterAdapter(new LegacyPrinter());
+    public static IPrinter CreateNewPrinter() => new NewPrinter();
+}
+
+public class NewPrinterTests : IDisposable
+{
+    private readonly IPrinter printer;
+    private readonly StringWriter writer = new();
+    private readonly TextWriter originalOut = Console.Out;
+
+    public NewPrinterTests()
+    {
+        Console.SetOut(writer);
+
+        printer = PrinterFactory.CreateNewPrinter();                        
+    }
+
+    public void Dispose()
+    {
+        Console.SetOut(originalOut);
+    }
+  
     [Fact]
     public void PrintDocument_SingleCopy_PrintsDocumentOnce()
     {
-        using StringWriter writer = new();
-        TextWriter originalOut = Console.Out;
-        Console.SetOut(writer);
 
-        try
-        {
-            var printer = new NewPrinter();
-            printer.PrintDocument("Invoice #42", copies: 1);
+        printer.PrintDocument("Invoice #42", copies: 1);
 
-            Assert.Equal($"Invoice #42{Environment.NewLine}", writer.ToString());
-        }
-        finally
-        {
-            Console.SetOut(originalOut);
-        }
+        Assert.Equal($"Invoice #42{Environment.NewLine}", writer.ToString());
+
     }
 
     [Fact]
     public void PrintDocument_MultipleCopies_PrintsDocumentForEachCopy()
     {
-        using StringWriter writer = new();
-        TextWriter originalOut = Console.Out;
-        Console.SetOut(writer);
 
-        try
-        {
-            var printer = new NewPrinter();
-            printer.PrintDocument("Invoice #42", copies: 3);
+        printer.PrintDocument("Invoice #42", copies: 3);
 
-            string expected = string.Join("", Enumerable.Repeat($"Invoice #42{Environment.NewLine}", 3));
-            Assert.Equal(expected, writer.ToString());
-        }
-        finally
-        {
-            Console.SetOut(originalOut);
-        }
+        string expected = string.Join("", Enumerable.Repeat($"Invoice #42{Environment.NewLine}", 3));
+        Assert.Equal(expected, writer.ToString());
+
     }
 
     [Fact]
     public void PrintDocument_ZeroCopies_PrintsNothing()
     {
-        using StringWriter writer = new();
-        TextWriter originalOut = Console.Out;
-        Console.SetOut(writer);
 
-        try
-        {
-            var printer = new NewPrinter();
-            printer.PrintDocument("Invoice #42", copies: 0);
+        printer.PrintDocument("Invoice #42", copies: 0);
 
-            Assert.Equal(string.Empty, writer.ToString());
-        }
-        finally
-        {
-            Console.SetOut(originalOut);
-        }
+        Assert.Equal(string.Empty, writer.ToString());
+
     }
+
+
 }
