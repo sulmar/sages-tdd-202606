@@ -11,3 +11,8 @@ public class CreatedResult<T> : ActionResult
 
     public T Value { get; }
 }
+
+public class OkResult : ActionResult
+{
+
+}
