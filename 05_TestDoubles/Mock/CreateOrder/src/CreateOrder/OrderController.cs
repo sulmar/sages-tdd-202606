@@ -10,7 +10,9 @@ public class OrderController(IMessageClient client)
 {
     public ActionResult Post(Order order)
     {
-        client.Send("Order created");        
+        if (order.Id > 0)
+            client.Send("Order created!");        
+        
 
         return new CreatedResult<Order>(order);
     }

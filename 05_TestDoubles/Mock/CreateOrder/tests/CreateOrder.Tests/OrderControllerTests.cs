@@ -18,12 +18,13 @@ public class OrderControllerTests
         // Arrange
         var mock = new MockMessageClient();
         var controller = new OrderController(mock);
-        var order = new Order();
+        var order = new Order() { Id = 1 };
 
         // Act
         controller.Post(order);
 
         // Assert
-        Assert.Equal(1, mock.Count);    
+        Assert.Equal(1, mock.Count);
     }
 }
+

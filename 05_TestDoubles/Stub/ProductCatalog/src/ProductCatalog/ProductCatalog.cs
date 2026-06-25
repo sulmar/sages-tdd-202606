@@ -1,9 +1,20 @@
 namespace ProductCatalog;
 
-public class ProductCatalog
+
+public interface IFileReader
+{
+    string ReadAllText(string fileName);
+}
+
+public class RealFileReader : IFileReader
+{
+    public string ReadAllText(string fileName) => File.ReadAllText(fileName);
+}
+
+public class ProductCatalog(IFileReader fileReader)
 {
     public string GetProductName()
     {
-        return File.ReadAllText("product.txt");
+        return fileReader.ReadAllText("product.csv");
     }
 }
