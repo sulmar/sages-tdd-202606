@@ -24,6 +24,7 @@ public class FakeWhitespaceFileReader : IFileReader
 
 public class ProductCatalogTests
 {
+    // Leniwa inicjalizacja
     private Lazy<ProductCatalog> _lazyCatalog => new Lazy<ProductCatalog>(() => new ProductCatalog(fileReader));
     private ProductCatalog catalog => _lazyCatalog.Value;
 
