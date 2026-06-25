@@ -1,6 +1,6 @@
 namespace CreateOrder;
 
-public class GmailApiClient
+public class GmailApiClient : IMessageClient
 {
     public void Send(string message)
     {
